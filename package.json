@@ -1,0 +1,26 @@
+{
+  "name": "my-mini-vue",
+  "version": "1.0.0",
+  "description": "实现一个简略版的vue",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DOIT008/my-mini-vue.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DOIT008/my-mini-vue/issues"
+  },
+  "homepage": "https://github.com/DOIT008/my-mini-vue#readme",
+  "devDependencies": {
+    "@types/node": "^18.13.0",
+    "@vitest/coverage-c8": "^0.28.4",
+    "jsdom": "^21.1.0",
+    "vitest": "^0.28.4"
+  }
+}
