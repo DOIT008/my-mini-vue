@@ -1,5 +1,8 @@
+import { effect } from '@/reactivity/effect';
 class ReactiveEffect { 
-  private _fn: Function
+  private _fn: Function;
+  active = true; // 是否清空，清空后是false
+  deps = []; // 存储所有的dep
   // 为啥加public，为了在实例上能拿到该参数
   constructor(fn:Function,public scheduler?) { 
     this._fn = fn
@@ -9,6 +12,20 @@ class ReactiveEffect {
     activeEffect = this;
     return this._fn()
   }
+  stop() {
+    // 未清空时再执行清空操作，防止重复清空
+    if (this.active) {
+      // 遍历所有的dep，找到当前的activeEffectye（也就是dep），删除即可
+      cleanupEffect(this);
+      this.active = false;
+    }
+  }
+}
+
+function cleanupEffect(effect) { 
+  effect.deps.forEach((dep:any) => { 
+    dep.delete(effect)
+  })
 }
 
 /**
@@ -35,6 +52,8 @@ export function track(target:any, key:any) {
   }
   // 收集的是activeEffect实例
   dep.add(activeEffect)
+  // 收集一下所有的dep
+  activeEffect?.deps.push(dep)
 }
 
 
@@ -48,7 +67,10 @@ export function effect(fn: Function, option:any = {}) {
   // 调用这个的时候已经返回foo
   _effect.run();
   // 其实返回的就是run方法，为啥要这么写，是为了处理run内部的this指向
-  return _effect.run.bind(_effect)
+  const runner: any = _effect.run.bind(_effect);
+  // 以便在外面的函数访问当前的_effect实例,runner.effect变成了_effect实例
+  runner.effect = _effect;
+  return runner
 }
 
 export function trigger(target:any,key:any) {
@@ -61,4 +83,9 @@ export function trigger(target:any,key:any) {
       effect.run()
     }
   }
+}
+
+// stop
+export function stop(runner) { 
+  runner.effect.stop()
 }

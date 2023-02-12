@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { reactive} from "@/reactivity/reactive";
-import { effect } from "@/reactivity/effect";
+import { effect,stop } from "@/reactivity/effect";
 describe("effect", () => {
   it('happy path', () => { 
     const user = reactive({
@@ -68,5 +68,29 @@ describe("effect", () => {
     run();
     // should have run
     expect(dummy).toBe(2)
+  })
+
+  // stop
+  it('stop', () => { 
+    let dummy;
+    const obj = reactive({
+      personNumber:16
+    })
+    const runner = effect(() => {
+      dummy = obj.personNumber
+    })
+    // 更新
+    obj.personNumber = 19;
+    expect(dummy).toBe(19)
+    
+    stop(runner)
+    // 再次更新数据
+    obj.personNumber = 29;
+    // 不更新了
+    expect(dummy).toBe(19)
+    // 重新执行runner
+    runner()
+    // dummy变成29
+    expect(dummy).toBe(29)
   })
 })
