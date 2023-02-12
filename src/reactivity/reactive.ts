@@ -1,4 +1,4 @@
-import { track,trigger } from "./effect";
+import { track, trigger } from "./effect";
 export function reactive(dataObj: any) {
   return new Proxy(dataObj, {
     // 这里的target就是原始数据对象，key就是数据对象属性
@@ -14,6 +14,18 @@ export function reactive(dataObj: any) {
       // 触发依赖,遍历之前收集到的依赖，执行每一个fn
       trigger(target,key)
       return res
+    }
+  })
+}
+
+export function readonly(target:any) {
+  return new Proxy(target, {
+    get(target, key) {
+      let res = Reflect.get(target, key)
+      return res
+    },
+    set(target,key,value) { 
+      return false
     }
   })
 }
