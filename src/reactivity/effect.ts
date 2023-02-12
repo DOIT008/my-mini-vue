@@ -1,8 +1,10 @@
-import { effect } from '@/reactivity/effect';
+import { extend } from "@/shared/index";
+
 class ReactiveEffect { 
   private _fn: Function;
   active = true; // 是否清空，清空后是false
   deps = []; // 存储所有的dep
+  onStop?:()=>void
   // 为啥加public，为了在实例上能拿到该参数
   constructor(fn:Function,public scheduler?) { 
     this._fn = fn
@@ -17,6 +19,9 @@ class ReactiveEffect {
     if (this.active) {
       // 遍历所有的dep，找到当前的activeEffectye（也就是dep），删除即可
       cleanupEffect(this);
+      if (this.onStop) { 
+        this.onStop()
+      }
       this.active = false;
     }
   }
@@ -50,10 +55,11 @@ export function track(target:any, key:any) {
     dep = new Set();
     depsMap.set(key, dep)
   }
+  if(!activeEffect) return
   // 收集的是activeEffect实例
   dep.add(activeEffect)
   // 收集一下所有的dep
-  activeEffect?.deps.push(dep)
+  activeEffect.deps.push(dep)
 }
 
 
@@ -61,9 +67,12 @@ export function track(target:any, key:any) {
 let activeEffect:any;
 // 副作用,当effect执行的时候，其内部的函数fn也会执行
 export function effect(fn: Function, option:any = {}) {
-  const scheduler = option.scheduler
+  const scheduler = option.scheduler;
   // 被收集的对象,为啥是它呢，是因为它上面有run方法，可以修改数据？
-  const _effect = new ReactiveEffect(fn,scheduler);
+  const _effect = new ReactiveEffect(fn, scheduler);
+  // 将传入的onStop，传给effect实例
+  // _effect.onStop = option.onStop
+  extend(_effect, option)
   // 调用这个的时候已经返回foo
   _effect.run();
   // 其实返回的就是run方法，为啥要这么写，是为了处理run内部的this指向

@@ -93,4 +93,19 @@ describe("effect", () => {
     // dummy变成29
     expect(dummy).toBe(29)
   })
+
+  it('onStop', () => { 
+    const obj = reactive({
+      foo: 1
+    });
+    const onStop = vitest.fn();
+    let dummy;
+    const runner = effect(() => {
+      dummy = obj.foo
+    }, {
+      onStop
+    })
+    stop(runner);
+    expect(onStop).toBeCalledTimes(1)
+  })
 })
