@@ -85,13 +85,13 @@ describe("effect", () => {
     
     stop(runner)
     // 再次更新数据
-    obj.personNumber = 29;
+    obj.personNumber++;
     // 不更新了
     expect(dummy).toBe(19)
     // 重新执行runner
     runner()
     // dummy变成29
-    expect(dummy).toBe(29)
+    expect(dummy).toBe(20)
   })
 
   it('onStop', () => { 

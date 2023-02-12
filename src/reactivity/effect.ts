@@ -1,5 +1,8 @@
 import { extend } from "@/shared/index";
-
+// 声明一个变量，以便拿到 _effect
+let activeEffect: any;
+// 要不要进行依赖收集
+let shouldTrack = false;
 class ReactiveEffect { 
   private _fn: Function;
   active = true; // 是否清空，清空后是false
@@ -10,9 +13,17 @@ class ReactiveEffect {
     this._fn = fn
   }
   run() { 
+    if (!this.active) { 
+      return this._fn()
+    }
     // 当执行run的时候，这里的this就是ReactiveEffect实例，说白了就是下面的_effect
     activeEffect = this;
-    return this._fn()
+    shouldTrack = true;
+    const result = this._fn();
+    // reset
+    shouldTrack = false;
+    return result
+    
   }
   stop() {
     // 未清空时再执行清空操作，防止重复清空
@@ -31,6 +42,7 @@ function cleanupEffect(effect) {
   effect.deps.forEach((dep:any) => { 
     dep.delete(effect)
   })
+  effect.deps.length = 0
 }
 
 /**
@@ -55,7 +67,10 @@ export function track(target:any, key:any) {
     dep = new Set();
     depsMap.set(key, dep)
   }
-  if(!activeEffect) return
+  if (!activeEffect) return
+  if (!shouldTrack) return
+  // 如果曾经搜集过当前的依赖就不用重新收集了
+  if (dep.has(activeEffect)) return 
   // 收集的是activeEffect实例
   dep.add(activeEffect)
   // 收集一下所有的dep
@@ -63,8 +78,6 @@ export function track(target:any, key:any) {
 }
 
 
-// 声明一个变量，以便拿到 _effect
-let activeEffect:any;
 // 副作用,当effect执行的时候，其内部的函数fn也会执行
 export function effect(fn: Function, option:any = {}) {
   const scheduler = option.scheduler;
@@ -82,6 +95,7 @@ export function effect(fn: Function, option:any = {}) {
   return runner
 }
 
+// 遍历所有的dep中所有的依赖并执行
 export function trigger(target:any,key:any) {
   let depsMap = targetMap.get(target);
   let dep = depsMap.get(key);
