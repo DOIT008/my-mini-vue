@@ -1,4 +1,4 @@
-import { readonly } from "@/reactivity/reactive";
+import { readonly,isReadonly } from "@/reactivity/reactive";
 import { describe, it, expect } from "vitest";
 describe("readonly", () => {
   it("happy path", () => {
@@ -11,6 +11,9 @@ describe("readonly", () => {
     const packageData = readonly(origionalData);
     expect(packageData).not.toBe(origionalData);
     expect(packageData.foo).toBe(1)
+    // 测试 packageData 是否是readonly
+    expect(isReadonly(packageData)).toBe(true)
+    expect(isReadonly(origionalData)).toBe(false)
   })
 
   it('warn when call set', () => { 

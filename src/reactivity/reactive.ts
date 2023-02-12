@@ -1,7 +1,8 @@
 import { mutableHandlers, readonlyHandlers } from "./baseHandlers";
 // 设置一个枚举
 export const enum ReactiveFlags { 
-  IS_REACTIVE="_is_reactive"
+  IS_REACTIVE = "_is_reactive",
+  IS_READONLY = '_is_readonly'
 }
 export function reactive(dataObj: any) {
   return createActiveObject(dataObj,mutableHandlers);
@@ -19,4 +20,9 @@ function createActiveObject(target,baseHandlers) {
 export function isReactive(dataObj) { 
   // 会触发get操作，不管是不是reactive
   return !!dataObj[ReactiveFlags.IS_REACTIVE]
+}
+
+// 判断一个数据对象是否是readonly
+export function isReadonly(dataObj) { 
+  return !!dataObj[ReactiveFlags.IS_READONLY]
 }

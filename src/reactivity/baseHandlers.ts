@@ -8,6 +8,8 @@ function createGetter(isReadonly = false) {
   return function (target, key) {
     if (key === ReactiveFlags.IS_REACTIVE) { 
       return !isReadonly
+    } else if (key === ReactiveFlags.IS_READONLY) {
+      return isReadonly
     }
     // 这里的target就是数据对象，key就是属性key
     let res = Reflect.get(target, key);
