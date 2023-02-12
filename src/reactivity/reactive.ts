@@ -1,39 +1,12 @@
-import { track, trigger } from "./effect";
-// 封装get
-function createGetter(isReadonly = false) {
-  return function (target, key) {
-    let res = Reflect.get(target, key);
-    // todo:依赖收集
-    if (!isReadonly) {
-      track(target, key);
-    }
-    return res;
-  };
-}
-// 封装set
-function createSetter() {
-  return function (target, key, value) {
-    let res = Reflect.set(target, key, value);
-      // 触发依赖,遍历之前收集到的依赖，执行每一个fn
-      trigger(target, key);
-      return res;
-  };
-}
-
+import { mutableHandlers,readonlyHandlers } from "./baseHandlers";
 export function reactive(dataObj: any) {
-  return new Proxy(dataObj, {
-    // 这里的target就是原始数据对象，key就是数据对象属性
-    get: createGetter(),
-    // 这里的value就是新值
-    set: createSetter(),
-  });
+  return createActiveObject(dataObj,mutableHandlers);
 }
 
 export function readonly(target: any) {
-  return new Proxy(target, {
-    get: createGetter(true),
-    set(target, key, value) {
-      return false;
-    },
-  });
+  return createActiveObject(target,readonlyHandlers);
+}
+
+function createActiveObject(target,baseHandlers) { 
+  return new Proxy(target,baseHandlers)
 }
