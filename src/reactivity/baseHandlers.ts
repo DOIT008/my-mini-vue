@@ -1,12 +1,17 @@
 import { track, trigger } from "./effect";
+import { ReactiveFlags } from "./reactive";
 const get = createGetter();
 const set = createSetter();
 const readonlyGet = createGetter(true);
 // 封装get
 function createGetter(isReadonly = false) {
   return function (target, key) {
+    if (key === ReactiveFlags.IS_REACTIVE) { 
+      return !isReadonly
+    }
+    // 这里的target就是数据对象，key就是属性key
     let res = Reflect.get(target, key);
-    // todo:依赖收集
+    //依赖收集
     if (!isReadonly) {
       track(target, key);
     }
