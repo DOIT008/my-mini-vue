@@ -12,4 +12,13 @@ describe("readonly", () => {
     expect(packageData).not.toBe(origionalData);
     expect(packageData.foo).toBe(1)
   })
+
+  it('warn when call set', () => { 
+    console.warn = vitest.fn();
+    const animal = readonly({
+      age:18
+    });
+    animal.age = 19;
+    expect(console.warn).toBeCalled()
+  })
 })
