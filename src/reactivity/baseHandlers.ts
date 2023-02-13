@@ -5,8 +5,9 @@ import{isObject} from "@/shared/index"
 const get = createGetter();
 const set = createSetter();
 const readonlyGet = createGetter(true);
+const shallowReadonlyGet = createGetter(true,true)
 // 封装get
-function createGetter(isReadonly = false) {
+function createGetter(isReadonly = false,shallow=false) {
   return function (target, key) {
     if (key === ReactiveFlags.IS_REACTIVE) { 
       return !isReadonly
@@ -15,6 +16,9 @@ function createGetter(isReadonly = false) {
     }
     // 这里的target就是数据对象，key就是属性key
     let res = Reflect.get(target, key);
+    if (shallow) { 
+      return res
+    }
     if (isObject(res)) { 
       return isReadonly?readonly(res): reactive(res)
     }
@@ -46,3 +50,11 @@ export const readonlyHandlers = {
     return true;
   },
 };
+
+export const shallowReadonlyHandlers = {
+  get: shallowReadonlyGet,
+  set(target, key, value) {
+    console.warn(`${key} set失败，因为target是readonly`,target)
+    return true;
+  },
+}
