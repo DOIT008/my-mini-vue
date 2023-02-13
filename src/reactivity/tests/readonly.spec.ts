@@ -1,4 +1,4 @@
-import { readonly,isReadonly } from "@/reactivity/reactive";
+import { readonly,isReadonly,isProxy } from "@/reactivity/reactive";
 import { describe, it, expect } from "vitest";
 describe("readonly", () => {
   it("happy path", () => {
@@ -17,6 +17,7 @@ describe("readonly", () => {
     // 判断嵌套的数据是否是readonly
     expect(isReadonly(packageData.bar)).toBe(true)
     expect(isReadonly(origionalData.bar)).toBe(false)
+    expect(isProxy(packageData)).toBe(true)
   })
 
   it('warn when call set', () => { 

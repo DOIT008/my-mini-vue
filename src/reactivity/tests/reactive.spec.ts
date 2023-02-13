@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { reactive,isReactive } from "@/reactivity/reactive";
+import { reactive,isReactive,isProxy } from "@/reactivity/reactive";
 describe("reactive", () => {
   it('happy path', () => { 
     const original = {
@@ -12,7 +12,9 @@ describe("reactive", () => {
     expect(observe.foo).toBe(1)
     // 测试是否是reactive数据
     expect(isReactive(observe)).toBe(true);
-    expect(isReactive(original)).toBe(false)
+    expect(isReactive(original)).toBe(false);
+    // 判断数据对象是否是Proxy
+    expect(isProxy(observe)).toBe(true)
   })
 
   it("多层数据嵌套，是否是响应式数据呢", () => { 

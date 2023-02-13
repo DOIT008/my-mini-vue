@@ -1,3 +1,4 @@
+import { isProxy } from '@/reactivity/reactive';
 import { mutableHandlers, readonlyHandlers,shallowReadonlyHandlers } from "./baseHandlers";
 // 设置一个枚举
 export const enum ReactiveFlags { 
@@ -31,4 +32,7 @@ export function isReactive(dataObj) {
 export function isReadonly(dataObj) { 
   return !!dataObj[ReactiveFlags.IS_READONLY]
 }
-
+// 判断一个数据对象是否是Proxy代理对象
+export function isProxy(target) { 
+  return isReactive(target)||isReadonly(target)
+}
