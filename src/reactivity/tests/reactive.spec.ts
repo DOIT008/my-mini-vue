@@ -14,4 +14,17 @@ describe("reactive", () => {
     expect(isReactive(observe)).toBe(true);
     expect(isReactive(original)).toBe(false)
   })
+
+  it("多层数据嵌套，是否是响应式数据呢", () => { 
+    const origionalData = {
+      user: {
+        age:13
+      },
+      bookList: [{name:'《红楼梦》',count:18}]
+    }
+    const reactiveData = reactive(origionalData)
+    expect(isReactive(reactiveData.user)).toBe(true)
+    expect(isReactive(reactiveData.bookList)).toBe(true)
+    expect(isReactive(reactiveData.bookList[0])).toBe(true)
+  })
 })
