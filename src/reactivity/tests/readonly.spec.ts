@@ -14,6 +14,9 @@ describe("readonly", () => {
     // 测试 packageData 是否是readonly
     expect(isReadonly(packageData)).toBe(true)
     expect(isReadonly(origionalData)).toBe(false)
+    // 判断嵌套的数据是否是readonly
+    expect(isReadonly(packageData.bar)).toBe(true)
+    expect(isReadonly(origionalData.bar)).toBe(false)
   })
 
   it('warn when call set', () => { 

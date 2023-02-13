@@ -1,4 +1,4 @@
-import { reactive } from '@/reactivity/reactive';
+import { reactive, readonly } from '@/reactivity/reactive';
 import { track, trigger } from "./effect";
 import { ReactiveFlags } from "./reactive";
 import{isObject} from "@/shared/index"
@@ -16,7 +16,7 @@ function createGetter(isReadonly = false) {
     // 这里的target就是数据对象，key就是属性key
     let res = Reflect.get(target, key);
     if (isObject(res)) { 
-      return reactive(res)
+      return isReadonly?readonly(res): reactive(res)
     }
     //依赖收集
     if (!isReadonly) {
