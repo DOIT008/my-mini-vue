@@ -1,11 +1,16 @@
-import { hasChanged } from "@/shared";
+import { reactive } from '@/reactivity/reactive';
+import { hasChanged, isObject } from "@/shared";
 import { trackEffects,triggerEffects,isTracking } from "./effect";
 
+// ref，接收的一般都是基础类型的数据，为啥要包裹成对象，是为了搜集和触发依赖的需要，get—>track，set->trigger
 class RwfImpl { 
   private _value: any;
   public dep;
+  private _rawValue: any; // 存储原始数据
   constructor(value) { 
-    this._value = value
+    this._rawValue = value;
+    // 如果value是对象->reactive(value)，否则就直接取value
+    this._value = convert(value);
     this.dep = new Set()
   }
   get value() { 
@@ -15,14 +20,20 @@ class RwfImpl {
   }
   set value(newValue) {
     // 如果 新旧值相等就不用触发依赖了，也就不用触发fn了，不相等才进行触发依赖
-    if (hasChanged(newValue, this._value)) { 
+    // 如果传的是对象，那么对比的新旧对比的时候也都应该是普通对象
+    if (hasChanged(newValue, this._rawValue)) { 
       // 修改数据
-      this._value = newValue
+      this._rawValue = newValue;
+      this._value = convert(newValue) 
       // 触发依赖
       triggerEffects(this.dep)
     }
-    
   }
+}
+
+// 转换数据
+function convert(value) { 
+  return isObject(value) ? reactive(value) : value 
 }
 
 function trackRefValue(ref) {
