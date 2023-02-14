@@ -7,6 +7,7 @@ class RwfImpl {
   private _value: any;
   public dep;
   private _rawValue: any; // 存储原始数据
+  public _v_isRef = true;
   constructor(value) { 
     this._rawValue = value;
     // 如果value是对象->reactive(value)，否则就直接取value
@@ -46,4 +47,16 @@ export function ref(value) {
   // const data = ref(1), data.value ,所以返回的应该是一个对象，那么我们就创建一个对象
   let dataObj = new RwfImpl(value);
   return dataObj
+}
+
+
+// isRef，判断数据是不是ref()类型的数据
+export function isRef(ref) {
+  return !!ref._v_isRef
+}
+
+// 返回数据的值（value）
+export function unRef(ref) { 
+  // 如果是ref数据，返回ref.value,否则返回本身
+  return isRef(ref)?ref.value:ref
 }
