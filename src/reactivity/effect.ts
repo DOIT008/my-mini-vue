@@ -3,7 +3,7 @@ import { extend } from "@/shared/index";
 let activeEffect: any;
 // 要不要进行依赖收集
 let shouldTrack = false;
-class ReactiveEffect { 
+export class ReactiveEffect { 
   private _fn: Function;
   active = true; // 是否清空，清空后是false
   deps = []; // 存储所有的dep
