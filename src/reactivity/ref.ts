@@ -75,7 +75,6 @@ export function proxyRefs(objectWithRefs) {
       } else { 
         return Reflect.set(target, key, newValue)
       }
-      
     }
   })
 }
