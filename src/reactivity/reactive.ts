@@ -1,4 +1,4 @@
-import { isProxy } from '@/reactivity/reactive';
+
 import { mutableHandlers, readonlyHandlers,shallowReadonlyHandlers } from "./baseHandlers";
 // 设置一个枚举
 export const enum ReactiveFlags { 

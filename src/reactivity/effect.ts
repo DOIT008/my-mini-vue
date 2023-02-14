@@ -69,17 +69,22 @@ export function track(target:any, key:any) {
   }
   if (!activeEffect) return
   if (!shouldTrack) return
-  // 如果曾经搜集过当前的依赖就不用重新收集了
-  if (dep.has(activeEffect)) return 
-  // 收集的是activeEffect实例
-  dep.add(activeEffect)
-  // 收集一下所有的dep
-  activeEffect.deps.push(dep)
+  trackEffects(dep)
 }
 
+export function trackEffects(dep) { 
+ // 如果曾经搜集过当前的依赖就不用重新收集了
+ if (dep.has(activeEffect)) return 
+ // 收集的是activeEffect实例
+ dep.add(activeEffect)
+ // 收集一下所有的dep
+ activeEffect.deps.push(dep)
+}
 
 // 副作用,当effect执行的时候，其内部的函数fn也会执行
-export function effect(fn: Function, option:any = {}) {
+export function effect(fn: Function, option: any = {}) {
+  // activeEffect没有的时候就不收集依赖
+  if(isTracking()) return
   const scheduler = option.scheduler;
   // 被收集的对象,为啥是它呢，是因为它上面有run方法，可以修改数据？
   const _effect = new ReactiveEffect(fn, scheduler);
@@ -99,6 +104,10 @@ export function effect(fn: Function, option:any = {}) {
 export function trigger(target:any,key:any) {
   let depsMap = targetMap.get(target);
   let dep = depsMap.get(key);
+  triggerEffects(dep)
+}
+
+export function triggerEffects(dep) { 
   for (const effect of dep) {
     if (effect.scheduler) {
       effect.scheduler()
@@ -107,8 +116,11 @@ export function trigger(target:any,key:any) {
     }
   }
 }
-
 // stop
 export function stop(runner) { 
   runner.effect.stop()
+}
+//  ？？
+export function isTracking() { 
+  return shouldTrack&&activeEffect!==undefined
 }
