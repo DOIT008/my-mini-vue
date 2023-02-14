@@ -25,8 +25,8 @@ describe('ref', () => {
     expect(dummy).toBe(2)
 
     // 再次修改
-    // data.value = 2;
-    // expect(calls).toBe(2)
-    // expect(dummy).toBe(2)
+    data.value = 2;
+    expect(calls).toBe(2)
+    expect(dummy).toBe(2)
   })
 })
