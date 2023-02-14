@@ -60,3 +60,22 @@ export function unRef(ref) {
   // 如果是ref数据，返回ref.value,否则返回本身
   return isRef(ref)?ref.value:ref
 }
+
+// proxyRefs
+export function proxyRefs(objectWithRefs) { 
+  return new Proxy(objectWithRefs, {
+    get(target, key) { 
+      // get->ref(age)->返回.value即可，如果不是直接返回值本身即可
+      return unRef(Reflect.get(target, key))
+    },
+    set(target, key, newValue) {
+      // set->ref->修改.value，如果不是ref数据
+      if (isRef(target[key]) && !isRef(newValue)) {
+        return target[key].value = newValue
+      } else { 
+        return Reflect.set(target, key, newValue)
+      }
+      
+    }
+  })
+}
