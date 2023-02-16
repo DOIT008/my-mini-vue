@@ -2,11 +2,13 @@
   "name": "my-mini-vue",
   "version": "1.0.0",
   "description": "实现一个简略版的vue",
-  "main": "index.js",
+  "main": "./lib/my-mini-vue.cjs.js",
+  "module": "./lib/my-mini-vue.esm.js",
+  "type": "module",
   "scripts": {
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "build": "rollup -c rollup.config.mjs"
+    "build": "rollup -c rollup.config.js --bundleConfigAsCjs"
   },
   "repository": {
     "type": "git",
