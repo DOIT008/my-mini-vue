@@ -4,7 +4,6 @@
   "description": "实现一个简略版的vue",
   "main": "./lib/my-mini-vue.cjs.js",
   "module": "./lib/my-mini-vue.esm.js",
-  "type": "module",
   "scripts": {
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
