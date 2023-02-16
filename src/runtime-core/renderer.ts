@@ -22,8 +22,9 @@ function processElement(vnode: any, container: any) {
 }
 
 function mountElement(vnode: any, container: any) {
+  // vnode->element->div
   const { props, children,type } = vnode
-  const el = document.createElement(type);
+  const el = (vnode.el= document.createElement(type));
   // children有两种形态，一种是string，一种是array
   if (typeof children === 'string') {
     el.textContent = children
@@ -48,17 +49,20 @@ function processComponent(vnode: any, container: any) {
   mountComponent(vnode,container)
 }
 
-function mountComponent(vnode: any,container:any) {
-  const instance = createComponentInstance(vnode)
+function mountComponent(initialVnode: any,container:any) {
+  const instance = createComponentInstance(initialVnode)
   setupComponentInstance(instance)
-  setupRenderEffect(instance,container)
+  setupRenderEffect(instance,initialVnode,container)
 }
 
-function setupRenderEffect(instance:any,container:any) {
-  const subTree = instance.render()
+function setupRenderEffect(instance: any,initialVnode:any, container: any) {
+  const { proxy } = instance
+  const subTree = instance.render.call(proxy)
   // vnode->patch
   // vnode->element->mountElement
-  patch(subTree,container)
+  patch(subTree, container)
+  // elements->mount
+  initialVnode.el = subTree.el
 }
 
 
