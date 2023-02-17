@@ -9,7 +9,17 @@ export const App = {
       id: 'Wrapper',
       class: ['hallo', 'world'],
     },
-      [h('div', {}, 'hi,' + this.msg), h(Foo, {})]
+      [h('div', {}, 'hi,' + this.msg), h(Foo, {
+        // 监听
+        onAdd(a,b) { 
+          console.log('emit add');
+          console.log(a,b);
+        },
+        // add-foo--->addFoo
+        onAddFoo() { 
+          console.log('add-foo')
+        }
+      })]
     )
   },
   setup() { 
