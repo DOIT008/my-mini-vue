@@ -37,18 +37,28 @@ function mountElement(vnode: any, container: any) {
     // 递归
     mountChildren(vnode,el)
   }
-
-  function mountChildren(vnode,container) {
-    vnode.children.forEach(child => { 
-      patch(child,container)
-    })
-  }
-  
   // 处理props，循环遍历设置属性
   for (const key in props) {
-    el.setAttribute(key, props[key])
+    const val = props[key];
+    console.log(key);
+    // on + Event name的形式，比如onClick，onMousemove，onMousedown...
+    // 判断是否符合上述模式
+    const isOn = (key:any)=>/^on[A-Z]/.test(key)
+    if (isOn(key)) {
+      const event = key.slice(2).toLowerCase();// onClick->click
+      el.addEventListener(event,val)
+    } else {
+      el.setAttribute(key, val)
+    }
+    
   }
   container.appendChild(el)
+}
+
+function mountChildren(vnode,container) {
+  vnode.children.forEach(child => { 
+    patch(child,container)
+  })
 }
 function processComponent(vnode: any, container: any) {
   mountComponent(vnode,container)

@@ -6,7 +6,13 @@ export const App = {
     window.self = this;
     return h('div', {
       id: 'Wrapper',
-      class:['hallo','world']
+      class: ['hallo', 'world'],
+      onClick(){ 
+        console.log('click!');
+      },
+      onMousedown(){ 
+        console.log('onMousedown');
+      },
     },
       // this.$el-> get root element
       'hello，'+this.msg
