@@ -1,3 +1,4 @@
+import { isObject } from '@/shared/index';
 
 import { mutableHandlers, readonlyHandlers,shallowReadonlyHandlers } from "./baseHandlers";
 // 设置一个枚举
@@ -18,7 +19,10 @@ export function shallowReadonly(target) {
   return createActiveObject(target,shallowReadonlyHandlers);
 }
 
-function createActiveObject(target,baseHandlers) { 
+function createActiveObject(target, baseHandlers) { 
+  if (!isObject(target)) { 
+    return console.log(`target,${target}必须是一个对象`)
+  }
   return new Proxy(target,baseHandlers)
 }
 

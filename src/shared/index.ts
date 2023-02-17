@@ -8,3 +8,7 @@ export function isObject(value) {
 export function hasChanged(newValue, oldValue) {
   return !Object.is(newValue,oldValue)
 }
+// 判断一个对象obj,是否有属性key
+export function hasOwn(obj, key) { 
+  return Object.prototype.hasOwnProperty.call(obj,key)
+}

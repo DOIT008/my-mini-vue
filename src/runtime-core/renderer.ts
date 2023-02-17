@@ -1,6 +1,6 @@
 import { isObject } from "@/shared/index";
 import { ShapeFlags } from "@/shared/shapeFlags";
-import { createComponentInstance, setupComponentInstance } from "./component"
+import { createComponentInstance, setupComponent } from "./component"
 
 export function render(vnode, container) { 
   // patch
@@ -66,7 +66,7 @@ function processComponent(vnode: any, container: any) {
 
 function mountComponent(initialVnode: any,container:any) {
   const instance = createComponentInstance(initialVnode)
-  setupComponentInstance(instance)
+  setupComponent(instance)
   setupRenderEffect(instance,initialVnode,container)
 }
 

@@ -1,19 +1,24 @@
+import { shallowReadonly } from "@/reactivity/reactive";
+import { initProps } from "./componentProps";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
 export function createComponentInstance(vnode) { 
   const component = {
     vnode,
     type: vnode.type,
     setupState: {},
-    el:null
+    el: null,
+    props: {}
   }
   return component
 }
 
-export function setupComponentInstance(instance) { 
-  // initProps()
+export function setupComponent(instance) { 
+  initProps(instance,instance.vnode.props)
   // initSlots()
   setupStatefulComponent(instance)
 }
+
+
 
 function setupStatefulComponent(instance: any) {
   const Component = instance.type;
@@ -24,7 +29,7 @@ function setupStatefulComponent(instance: any) {
   const { setup } = Component;
   if (setup) { 
     // 可能是个函数(将其当作render函数)，可能是object，就是数据
-    const setupResult = setup()
+    const setupResult = setup(shallowReadonly(instance.props) )
     handlerSetupResult(instance,setupResult)
   }
 }
@@ -40,4 +45,5 @@ function finishComponentSetup(instance: any) {
   const Component = instance.type;
   instance.render = Component.render
 }
+
 
