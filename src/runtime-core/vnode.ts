@@ -1,5 +1,7 @@
 // 将组件转化为虚拟节点vnode
 import { ShapeFlags } from "../shared/shapeFlags";
+export const Fragment = Symbol("Fragment");
+export const Text = Symbol("Text");
 export function createVNode(type, props?, children?) {
   // 虚拟节点
   const vnode = {
@@ -30,4 +32,8 @@ export function createVNode(type, props?, children?) {
 
 function getShapeFlags(type: any) {
   return typeof type === "string" ? ShapeFlags.ELEMENT:ShapeFlags.STATEFUL_COMPONENT
+}
+// 处理文本节点
+export function createTextVNode(text) {
+  return createVNode(Text, {},text)
 }
