@@ -7,7 +7,7 @@ export const App = {
     // 单个vnode
     // const foo = h(Foo, {}, h('p', {}, '1234'))
     // 多个vnode
-    const foo = h(Foo, {}, [h('p', {},'1234'),h('p', {},'5678')])
+    const foo = h(Foo, {}, { header: h('p', { },'header'), footer:h('p', { },'footer') })
     return h('div', {},[app,foo])
   },
   setup() { 
