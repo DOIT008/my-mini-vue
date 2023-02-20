@@ -1,11 +1,9 @@
 import {createRenderer} from '../runtime-core'
 function createElement(type) { 
-  console.log('createElement-------');
   return document.createElement(type)
 }
 
 function patchProp(el, key, val) { 
-  console.log('patchProp-------');
   
   //  on + Event name的形式，比如onClick，onMousemove，onMousedown...
   //     判断是否符合上述模式
@@ -19,7 +17,6 @@ function patchProp(el, key, val) {
 }
 
 function insert(el,container) { 
-  console.log("insert----------");
   container.append(el)
 }
 
