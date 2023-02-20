@@ -4,6 +4,7 @@ export function isObject(value) {
   return value !== null&&typeof value === "object"
 }
 
+export const EMPTY_OBJ = {}
 // 判断两个值是否相等
 export function hasChanged(newValue, oldValue) {
   return !Object.is(newValue,oldValue)
