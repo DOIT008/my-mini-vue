@@ -3,6 +3,18 @@ function createElement(type) {
   return document.createElement(type)
 }
 
+// 删除元素
+function remove(child) { 
+  const parent = child.parentNode;
+  if (parent) {
+    parent.removeChild(child)
+  }
+}
+
+function setElementText(container, text) {
+  container.textContent = text
+}
+
 function patchProp(el, key, prevVal,nextVal) { 
   
   //  on + Event name的形式，比如onClick，onMousemove，onMousedown...
@@ -24,7 +36,7 @@ function insert(el,container) {
   container.append(el)
 }
 
-const renderer:any = createRenderer({ createElement, patchProp, insert })
+const renderer:any = createRenderer({ createElement, patchProp, insert,remove,setElementText })
 
 export function createApp(...args) { 
   return renderer.createApp(...args)
