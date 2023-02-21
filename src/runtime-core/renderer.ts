@@ -1,7 +1,6 @@
 import { effect } from "@/reactivity/effect";
 import { EMPTY_OBJ } from "@/shared";
 import { ShapeFlags } from "@/shared/shapeFlags";
-import { constants } from "buffer";
 import { createComponentInstance, setupComponent } from "./component"
 import { createAppApi } from "./createApp";
 import { Fragment, Text } from "./vnode";
