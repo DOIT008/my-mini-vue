@@ -4,6 +4,7 @@ import { ShapeFlags } from "@/shared/shapeFlags";
 import { createComponentInstance, setupComponent } from "./component"
 import { createAppApi } from "./createApp";
 import { Fragment, Text } from "./vnode";
+import { getSequence } from "../../getSequence.js";
 
 // 创建渲染器
 export function createRenderer(options) {
@@ -142,7 +143,74 @@ export function createRenderer(options) {
         i++
       }
     } else { 
-      // 乱序
+      // 中间对比
+      let s1 = i;
+      let s2 = i;
+      const toBePatched = e2 - s2 + 1;
+      let patched = 0;
+      // 建立映射表
+      const keyToNewIndexMap = new Map();
+      const newIndexToOldIndexMap = new Array(toBePatched);
+      let moved = false;
+      let maxNewIndexSoFar = 0;
+      for (let i = 0; i < toBePatched; i++){
+        newIndexToOldIndexMap[i] = 0;
+      }
+      
+
+      for (let i = s2; i <= e2; i++){
+        const nextChild = c2[i]
+        keyToNewIndexMap.set(nextChild.key, i)
+      }
+      for (let i = s1; i <= e1; i++){
+        const prevChild = c1[i];
+        if (patched >= toBePatched) {
+          hostRemove(prevChild.el);
+          continue;
+        }
+        // 查找
+        let newIndex;
+        if (prevChild.key !== null) {
+          newIndex = keyToNewIndexMap.get(prevChild.key)
+        } else { 
+          for (let j = s2; j < e2; j++) {
+            if (isSameVNodeType(prevChild, c2[j])) {
+              newIndex = j;
+              break;
+            }
+          } 
+        }
+        if (newIndex===undefined) { 
+          hostRemove(prevChild.el);
+        } else {
+          if (newIndex >= maxNewIndexSoFar) {
+            maxNewIndexSoFar = newIndex;
+          } else {
+            moved = true;
+          }
+          newIndexToOldIndexMap[newIndex - s2] = i + 1;
+          patch(prevChild, c2[newIndex], container, parentComponent, null);
+          patched++;
+        }
+      }
+
+      const increasingNewIndexSequence = moved ? getSequence(newIndexToOldIndexMap) : [];
+      let j = increasingNewIndexSequence.length - 1;
+      for (let i = toBePatched - 1; i >= 0; i--) {
+        const nextIndex = i + s2;
+        const nextChild = c2[nextIndex];
+        const anchor = nextIndex + 1 < l2 ? c2[nextIndex + 1].el : null;
+        if (newIndexToOldIndexMap[i] === 0) {
+          patch(null, nextChild, container, parentComponent, anchor)
+        }else if (moved) {
+          if (i !== increasingNewIndexSequence[j]) {
+            console.log('移动位置');
+            hostInsert(nextChild.el, container, anchor);
+          } else {
+            j--;
+          }
+        }
+      }
     }
   }
   // 判断两个元素是否相等
