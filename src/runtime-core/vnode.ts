@@ -9,6 +9,7 @@ export function createVNode(type, props?, children?) {
     props,
     shapeFlag:getShapeFlags(type), // 判断当前节点vnode类型
     children,
+    component:null,
     key:props&&props.key,
     el:null
   }

@@ -5,6 +5,7 @@ import { createComponentInstance, setupComponent } from "./component"
 import { createAppApi } from "./createApp";
 import { Fragment, Text } from "./vnode";
 import { getSequence } from "../../getSequence.js";
+import { shouldUpdateComponent } from "./componentUpdateUtils";
 
 // 创建渲染器
 export function createRenderer(options) {
@@ -173,7 +174,7 @@ export function createRenderer(options) {
         if (prevChild.key !== null) {
           newIndex = keyToNewIndexMap.get(prevChild.key)
         } else { 
-          for (let j = s2; j < e2; j++) {
+          for (let j = s2; j <= e2; j++) {
             if (isSameVNodeType(prevChild, c2[j])) {
               newIndex = j;
               break;
@@ -277,17 +278,35 @@ export function createRenderer(options) {
     })
   }
   function processComponent(n1,n2: any, container: any, parentComponent,anchor) {
-    mountComponent(n2, container, parentComponent,anchor)
+    if (!n1) {
+      mountComponent(n2, container, parentComponent, anchor)
+    } else { 
+
+      updateComponent(n1, n2);
+    }
+   
   }
+  // 更新组件
+  function updateComponent(n1, n2) {
+    const instance = n2.component = n1.component;
+    if (shouldUpdateComponent(n1, n2)) {
+      instance.next = n2;
+      instance.update()
+    } else { 
+      n2.el = n1.el;
+      n2.vnode =n2
+    }
+  }
+  
 
   function mountComponent(initialVnode: any, container: any, parentComponent,anchor) {
-    const instance = createComponentInstance(initialVnode, parentComponent)
+    const instance = (initialVnode.component =createComponentInstance(initialVnode, parentComponent))
     setupComponent(instance)
     setupRenderEffect(instance, initialVnode, container,anchor)
   }
 
   function setupRenderEffect(instance: any, initialVnode: any, container: any,anchor) {
-    effect(() => { 
+   instance.update = effect(() => { 
       if (!instance.isMounted) {
         console.log('初始化');
         const { proxy } = instance
@@ -300,6 +319,12 @@ export function createRenderer(options) {
         instance.isMounted = true
       } else { 
         console.log('update');
+        // next,下次要更新的虚拟节点，vnode：更新之前的虚拟节点
+        const { next, vnode } = instance;
+        if (next) {
+          next.el = vnode.el;
+          updateComponentPreRender(instance,next)
+        }
         const { proxy } = instance
         const subTree = instance.render.call(proxy);
         const prevSubTree = instance.subTree;
@@ -312,6 +337,12 @@ export function createRenderer(options) {
   return {
     createApp:createAppApi(render)
   }
+}
+
+function updateComponentPreRender(instance, nextVNode) {
+  instance.vnode = nextVNode;
+  instance.next = null;
+  instance.props = nextVNode.props
 }
 
 
