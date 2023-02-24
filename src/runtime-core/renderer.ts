@@ -6,6 +6,7 @@ import { createAppApi } from "./createApp";
 import { Fragment, Text } from "./vnode";
 import { getSequence } from "../../getSequence.js";
 import { shouldUpdateComponent } from "./componentUpdateUtils";
+import { queueJobs } from "./scheduler";
 
 // 创建渲染器
 export function createRenderer(options) {
@@ -55,8 +56,6 @@ export function createRenderer(options) {
   }
 
   function patchElement(n1, n2: any, container,parentComponent,anchor) { 
-    console.log("🪶 ~ file: renderer.ts:55 ~ patchElement ~ n2:", n2)
-    console.log("🪶 ~ file: renderer.ts:55 ~ patchElement ~ n1:", n1)
     // props
     // children
     const oldProps = n1.props || EMPTY_OBJ;
@@ -332,7 +331,12 @@ export function createRenderer(options) {
         instance.subTree = subTree
         patch(prevSubTree,subTree, container, instance,anchor)
       }
-    })
+   }, {
+     scheduler() { 
+       console.log('updater-scheduler');
+       queueJobs(instance.update)
+     }
+   })
   }
   return {
     createApp:createAppApi(render)
