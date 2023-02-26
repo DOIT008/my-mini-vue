@@ -1,4 +1,8 @@
 export const extend = Object.assign
+// 判断是否是字符串
+export function isString(str) { 
+  return typeof str === "string"
+}
 // 判断是否是对象
 export function isObject(value) { 
   return value !== null&&typeof value === "object"
