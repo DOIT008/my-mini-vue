@@ -1,3 +1,4 @@
+export * from './toDisplayString'
 export const extend = Object.assign
 // 判断是否是字符串
 export function isString(str) { 
